@@ -3,9 +3,12 @@ package com.o.dagger2practice.ui.auth;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -27,6 +30,7 @@ public class AuthActivity extends DaggerAppCompatActivity {
     
     private EditText editText;
     private Button loginButton;
+    private ProgressBar progressBar;
 
     @Inject
     ViewModelProviderFactory viewModelProviderFactory;
@@ -44,6 +48,7 @@ public class AuthActivity extends DaggerAppCompatActivity {
         
         editText = findViewById(R.id.user_id_input);
         loginButton = findViewById(R.id.login_button);
+        progressBar = findViewById(R.id.progress_bar);
         
         loginButton.setOnClickListener(view -> attemptLogin());
 
@@ -55,11 +60,37 @@ public class AuthActivity extends DaggerAppCompatActivity {
     }
 
     private void subscribeObservers() {
-        authViewModel.observeUser().observe(this, user -> {
-            if (user != null) {
-                Log.d(TAG, "subscribeObservers: " + user.getEmail() + " is authenticated");
+        authViewModel.observeUser().observe(this, userAuthResource -> {
+            if (userAuthResource != null) {
+                switch (userAuthResource.status) {
+                    case LOADING:{
+                        showProgressBar(true);
+                        break;
+                    }
+                    case ERROR:{
+                        showProgressBar(false);
+                        Toast.makeText(this, userAuthResource.message, Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                    case AUTHENTICATED:{
+                        showProgressBar(false);
+                        Log.d(TAG, "subscribeObservers: login success: user = " + userAuthResource.data.getEmail());
+                        break;
+                    }
+                    case NOT_AUTHENTICATED: {
+                        showProgressBar(false);
+                        break;
+                    }
+                }
             }
         });
+    }
+
+    private void showProgressBar(boolean isVisible) {
+        if (isVisible)
+            progressBar.setVisibility(View.VISIBLE);
+        else
+            progressBar.setVisibility(View.GONE);
     }
 
     private void attemptLogin() {
