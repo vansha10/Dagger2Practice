@@ -18,7 +18,7 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
     private static final String TAG = "BaseActivity";
 
     @Inject
-    SessionManager sessionManager;
+    public SessionManager sessionManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
