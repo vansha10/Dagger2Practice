@@ -1,5 +1,6 @@
 package com.o.dagger2practice.ui.auth;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.RequestManager;
 import com.o.dagger2practice.R;
+import com.o.dagger2practice.ui.main.MainActivity;
 import com.o.dagger2practice.viewmodels.ViewModelProviderFactory;
 
 import javax.inject.Inject;
@@ -73,6 +75,7 @@ public class AuthActivity extends DaggerAppCompatActivity {
                     case AUTHENTICATED:{
                         showProgressBar(false);
                         Log.d(TAG, "subscribeObservers: login success: user = " + userAuthResource.data.getEmail());
+                        onLoginSuccess();
                         break;
                     }
                     case NOT_AUTHENTICATED: {
@@ -96,6 +99,11 @@ public class AuthActivity extends DaggerAppCompatActivity {
         if (!id.isEmpty()) {
             authViewModel.authenticateWithId(Integer.parseInt(id));
         }
+    }
+
+    private void onLoginSuccess() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     private void setLogo() {
