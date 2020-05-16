@@ -8,6 +8,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.o.dagger2practice.SessionManager;
 import com.o.dagger2practice.model.User;
 import com.o.dagger2practice.network.auth.AuthApi;
 
@@ -20,21 +21,24 @@ public class AuthViewModel extends ViewModel {
 
     private static final String TAG = "Dagger2Practice";
 
+    // inject
     private final AuthApi authApi;
-
-    private MediatorLiveData<AuthResource<User>> authUser = new MediatorLiveData<>();
+    private SessionManager sessionManager;
 
     @Inject
-    public AuthViewModel(AuthApi authApi) {
+    public AuthViewModel(AuthApi authApi, SessionManager sessionManager) {
         Log.d(TAG, "AuthViewModel: ViewModel is working");
         this.authApi = authApi;
+        this.sessionManager = sessionManager;
     }
 
     public void authenticateWithId(int userId) {
+        Log.d(TAG, "authenticateWithId: attempting to login...");
+        sessionManager.authenticateWithId(queryUserId(userId));
+    }
 
-        authUser.setValue(AuthResource.loading((User) null));
-
-        final LiveData<AuthResource<User>> source = LiveDataReactiveStreams.fromPublisher(
+    private LiveData<AuthResource<User>> queryUserId(int userId) {
+        return LiveDataReactiveStreams.fromPublisher(
                 authApi.getUser(userId)
                         .onErrorReturn(throwable -> {
                             User errorUser = new User();
@@ -48,14 +52,9 @@ public class AuthViewModel extends ViewModel {
                             return AuthResource.authenticated(user);
                         })
                         .subscribeOn(Schedulers.io()));
-
-        authUser.addSource(source, userAuthResource -> {
-            authUser.setValue(userAuthResource);
-            authUser.removeSource(source);
-        });
     }
 
-    public LiveData<AuthResource<User>> observeUser() {
-        return authUser;
+    public LiveData<AuthResource<User>> observeAuthState() {
+        return sessionManager.getAuthUser();
     }
 }

@@ -10,12 +10,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.RequestManager;
 import com.o.dagger2practice.R;
-import com.o.dagger2practice.model.User;
 import com.o.dagger2practice.viewmodels.ViewModelProviderFactory;
 
 import javax.inject.Inject;
@@ -60,7 +58,7 @@ public class AuthActivity extends DaggerAppCompatActivity {
     }
 
     private void subscribeObservers() {
-        authViewModel.observeUser().observe(this, userAuthResource -> {
+        authViewModel.observeAuthState().observe(this, userAuthResource -> {
             if (userAuthResource != null) {
                 switch (userAuthResource.status) {
                     case LOADING:{
