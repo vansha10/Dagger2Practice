@@ -7,9 +7,11 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.o.dagger2practice.BaseActivity;
 import com.o.dagger2practice.R;
+import com.o.dagger2practice.ui.main.profile.ProfileFragment;
 
 public class MainActivity extends BaseActivity {
 
@@ -19,6 +21,14 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        testFragment();
+    }
+
+    private void testFragment() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.main_container, new ProfileFragment())
+                .commit();
     }
 
     @Override
