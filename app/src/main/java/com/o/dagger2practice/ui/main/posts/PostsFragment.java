@@ -1,6 +1,7 @@
 package com.o.dagger2practice.ui.main.posts;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,5 +42,15 @@ public class PostsFragment extends DaggerFragment {
 
         viewModel = ViewModelProviders.of(this, providerFactory).get(PostsViewModel.class);
 
+        subscribeObservers();
+    }
+
+    private void subscribeObservers() {
+        viewModel.observePosts().removeObservers(getViewLifecycleOwner());
+        viewModel.observePosts().observe(getViewLifecycleOwner(), postListResource -> {
+            if (postListResource != null) {
+                Log.d(TAG, "subscribeObservers: " + postListResource.data);
+            }
+        });
     }
 }
