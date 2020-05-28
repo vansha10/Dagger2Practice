@@ -15,10 +15,12 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.RequestManager;
 import com.o.dagger2practice.R;
+import com.o.dagger2practice.model.User;
 import com.o.dagger2practice.ui.main.MainActivity;
 import com.o.dagger2practice.viewmodels.ViewModelProviderFactory;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
@@ -41,6 +43,15 @@ public class AuthActivity extends DaggerAppCompatActivity {
     @Inject
     RequestManager requestManager;
 
+    // @Named annotation used to differentiate between two dependencies of same class
+    @Inject
+    @Named("app-user")
+    User appLevelUser;
+
+    @Inject
+    @Named("auth-user")
+    User authLevelUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +68,12 @@ public class AuthActivity extends DaggerAppCompatActivity {
         setLogo();
 
         subscribeObservers();
+
+        // if we rotate the device, and destroy and recreate the auth activity, the app level user object is re-user and auth level user
+        // object is re-created. This is because when auth activity destroys, all dependencies in auth scope are destroyed
+        // whereas app level scope is singleton and is same for entire app lifecycle
+        Log.d(TAG, "onCreate: app scope user object: " + appLevelUser);
+        Log.d(TAG, "onCreate: auth scope user object: " + authLevelUser);
     }
 
     private void subscribeObservers() {

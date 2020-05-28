@@ -9,8 +9,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.o.dagger2practice.R;
+import com.o.dagger2practice.model.User;
 import com.o.dagger2practice.utils.Constants;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -21,6 +23,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class AppModule {
+
+    @Singleton
+    @Provides
+    @Named("app-user")
+    static User providesUser() {
+        return new User();
+    }
 
     @Singleton
     @Provides
